@@ -21,6 +21,8 @@ import io.netty.handler.codec.MessageAggregator;
 import io.netty.handler.codec.TooLongFrameException;
 
 /**
+ * web socket 分片聚合器，用于将web socket的多个分片数据聚合为一个
+ * WebSocketFrame
  * Handler that aggregate fragmented WebSocketFrame's.
  *
  * Be aware if PING/PONG/CLOSE frames are send in the middle of a fragmented {@link WebSocketFrame} they will
@@ -32,7 +34,7 @@ public class WebSocketFrameAggregator
     /**
      * Creates a new instance
      *
-     * @param maxContentLength If the size of the aggregated frame exceeds this value,
+     * @param maxContent的应用数据Length If the size of the aggregated frame exceeds this value,
      *                         a {@link TooLongFrameException} is thrown.
      */
     public WebSocketFrameAggregator(int maxContentLength) {

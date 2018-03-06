@@ -142,9 +142,15 @@ public class WebSocketServerProtocolHandler extends WebSocketProtocolHandler {
 
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) {
+        // 当pipeline添加完该handler之后，会调用该handler的此方法通知此handler
+        // handler已经添加完毕了
         ChannelPipeline cp = ctx.pipeline();
         if (cp.get(WebSocketServerProtocolHandshakeHandler.class) == null) {
             // Add the WebSocketHandshakeHandler before this one.
+            // 根据web socket的协议，在发送web socket协议数据之前，需要先进行web socket的
+            // 握手协议，所以需要**临时**添加握手协议处理的handler，完成握手协议。
+            // 既然是握手协议只需要只用一次，所以后续会替换或则删除该handler，
+            // 参考WebSocketServerProtocolHandshakeHandler的channelRead方法
             ctx.pipeline().addBefore(ctx.name(), WebSocketServerProtocolHandshakeHandler.class.getName(),
                     new WebSocketServerProtocolHandshakeHandler(websocketPath, subprotocols,
                             allowExtensions, maxFramePayloadLength, allowMaskMismatch, checkStartsWith));

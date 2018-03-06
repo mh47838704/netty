@@ -61,6 +61,9 @@ class WebSocketServerProtocolHandshakeHandler extends ChannelInboundHandlerAdapt
 
     @Override
     public void channelRead(final ChannelHandlerContext ctx, Object msg) throws Exception {
+
+        // 由于FullHttpRequest是带引用计数对象，而且在本方法中会被release
+        // 所以如果传入到该handler的msg的引用计数<=0，那么会引起IllegalReferenceCountException异
         final FullHttpRequest req = (FullHttpRequest) msg;
         if (isNotWebSocketPath(req)) {
             ctx.fireChannelRead(msg);
@@ -88,6 +91,7 @@ class WebSocketServerProtocolHandshakeHandler extends ChannelInboundHandlerAdapt
                             ctx.fireExceptionCaught(future.cause());
                         } else {
                             // Kept for compatibility
+                            // 产生握手完成的协议事件，提供给应用层使用该事件
                             ctx.fireUserEventTriggered(
                                     WebSocketServerProtocolHandler.ServerHandshakeStateEvent.HANDSHAKE_COMPLETE);
                             ctx.fireUserEventTriggered(
@@ -96,6 +100,7 @@ class WebSocketServerProtocolHandshakeHandler extends ChannelInboundHandlerAdapt
                         }
                     }
                 });
+                // 替换该handler为阻止Http请求的handler
                 WebSocketServerProtocolHandler.setHandshaker(ctx.channel(), handshaker);
                 ctx.pipeline().replace(this, "WS403Responder",
                         WebSocketServerProtocolHandler.forbiddenHttpRequestResponder());

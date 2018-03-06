@@ -87,6 +87,7 @@ public abstract class MessageToMessageDecoder<I> extends ChannelInboundHandlerAd
                 try {
                     decode(ctx, cast, out);
                 } finally {
+                    // 释放引用计数
                     ReferenceCountUtil.release(cast);
                 }
             } else {
