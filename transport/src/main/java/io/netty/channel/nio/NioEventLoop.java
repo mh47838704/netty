@@ -642,6 +642,8 @@ public final class NioEventLoop extends SingleThreadEventLoop {
             // Also check for readOps of 0 to workaround possible JDK bug which may otherwise lead
             // to a spin loop
             if ((readyOps & (SelectionKey.OP_READ | SelectionKey.OP_ACCEPT)) != 0 || readyOps == 0) {
+                // Socket读取消息或者是接收新的连接，不同类型的socket的read方法实现不同
+                // ServerSocket的read方法主要是获取新的连接，普通的socket负责消息的读取
                 unsafe.read();
             }
         } catch (CancelledKeyException ignored) {
@@ -733,6 +735,7 @@ public final class NioEventLoop extends SingleThreadEventLoop {
             for (;;) {
                 long timeoutMillis = (selectDeadLineNanos - currentTimeNanos + 500000L) / 1000000L;
                 if (timeoutMillis <= 0) {
+                    // 代表有任务需要调度执行
                     if (selectCnt == 0) {
                         selector.selectNow();
                         selectCnt = 1;

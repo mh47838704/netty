@@ -72,6 +72,7 @@ public abstract class AbstractNioMessageChannel extends AbstractNioChannel {
             try {
                 try {
                     do {
+                        // 调用子类自己实现的方法
                         int localRead = doReadMessages(readBuf);
                         if (localRead == 0) {
                             break;
@@ -181,6 +182,9 @@ public abstract class AbstractNioMessageChannel extends AbstractNioChannel {
 
     /**
      * Read messages into the given array and return the amount which was read.
+     * socket消息读取的保护接口，不同类型的socket子类的实现方式不一样，具体实现可以
+     * 参考{@link io.netty.channel.socket.nio.NioSocketChannel}和{@link io.netty.channel.socket.nio.NioServerSocketChannel}
+     * 的doReadMessages方法
      */
     protected abstract int doReadMessages(List<Object> buf) throws Exception;
 

@@ -27,6 +27,10 @@ public final class AttributeKey<T> extends AbstractConstant<AttributeKey<T>> {
     private static final ConstantPool<AttributeKey<Object>> pool = new ConstantPool<AttributeKey<Object>>() {
         @Override
         protected AttributeKey<Object> newConstant(int id, String name) {
+            // 生成的该对象主要是作为容器的key，所以必须保证id是唯一的或者是id+name是唯一的
+            // 本类中的唯一id有ConstantPool保证，参考ConstantPool类中的getOrCreate(String name)和nextId()
+            // AttributeKey在AttributeMap中作为可以的时候，是以AttributeKey的id作为AttributeMap中的数组
+            // 的索引使用的，参考AttributeMap的attr(AttributeKey<T> key)方法和index(key)方法
             return new AttributeKey<Object>(id, name);
         }
     };

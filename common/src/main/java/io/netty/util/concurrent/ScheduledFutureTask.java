@@ -25,6 +25,12 @@ import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
+/**
+ * 该任务实现了compareTo函数，该函数根据任务的截止时间的大小来判断两个对象的大小
+ * 常用于任务队列的排序，任务队列会调用该对象的compareTo方法来判断两个对象之间的
+ * 优先级的大小
+ * @param <V>
+ */
 @SuppressWarnings("ComparableImplementedButEqualsNotOverridden")
 final class ScheduledFutureTask<V> extends PromiseTask<V> implements ScheduledFuture<V>, PriorityQueueNode {
     private static final AtomicLong nextTaskId = new AtomicLong();
@@ -108,6 +114,7 @@ final class ScheduledFutureTask<V> extends PromiseTask<V> implements ScheduledFu
         } else if (d > 0) {
             return 1;
         } else if (id < that.id) {
+            // 截止时间相同，根据任务ID大小判断
             return -1;
         } else if (id == that.id) {
             throw new Error();

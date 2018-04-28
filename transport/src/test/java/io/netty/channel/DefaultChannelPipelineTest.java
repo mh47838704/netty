@@ -673,7 +673,7 @@ public class DefaultChannelPipelineTest {
 
     @Test(timeout = 3000)
     public void testAddHandlerBeforeRegisteredThenRemove() {
-        final EventLoop loop = group.next();
+        final EventLoop l，oop = group.next();
 
         CheckEventExecutorHandler handler = new CheckEventExecutorHandler(loop);
         ChannelPipeline pipeline = new LocalChannel().pipeline();

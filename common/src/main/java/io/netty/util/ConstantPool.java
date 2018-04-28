@@ -24,13 +24,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * A pool of {@link Constant}s.
+ * 常量池:key是字符串,value泛型
  *
  * @param <T> the type of the constant
  */
 public abstract class ConstantPool<T extends Constant<T>> {
 
+    /** Key:String表示常量的名字，value:泛型结果 */
     private final ConcurrentMap<String, T> constants = PlatformDependent.newConcurrentHashMap();
 
+    /** 常量对象的唯一标识符 */
     private final AtomicInteger nextId = new AtomicInteger(1);
 
     /**
@@ -62,6 +65,7 @@ public abstract class ConstantPool<T extends Constant<T>> {
 
     /**
      * Get existing constant by name or creates new one if not exists. Threadsafe
+     * 生成或者返回常量名字对于得常量对象
      *
      * @param name the name of the {@link Constant}
      */

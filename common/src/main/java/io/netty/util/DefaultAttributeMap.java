@@ -22,6 +22,10 @@ import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 /**
  * Default {@link AttributeMap} implementation which use simple synchronization per bucket to keep the memory overhead
  * as low as possible.
+ * 属性集合map默认实现，如果任何组件需要有属性的配置，可以继承该类实现组件属性特性。可以参考channel组件，该组件可以实现
+ * 在pipeline中各个filter之间的属性传递的通信
+ *
+ * Notice:该类的实现是线程安全的
  */
 public class DefaultAttributeMap implements AttributeMap {
 
@@ -47,6 +51,7 @@ public class DefaultAttributeMap implements AttributeMap {
             // Not using ConcurrentHashMap due to high memory consumption.
             attributes = new AtomicReferenceArray<DefaultAttribute<?>>(BUCKET_SIZE);
 
+            // 使用CAS操作保证多线程安全
             if (!updater.compareAndSet(this, null, attributes)) {
                 attributes = this.attributes;
             }

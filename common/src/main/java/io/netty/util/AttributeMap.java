@@ -17,8 +17,9 @@ package io.netty.util;
 
 /**
  * Holds {@link Attribute}s which can be accessed via {@link AttributeKey}.
+ * 属性容器接口，可以被所有有属性需求的组件使用
  *
- * Implementations must be Thread-safe.
+ * Implementations must be Thread-safe.（子类实现必须保证线程安全）
  */
 public interface AttributeMap {
     /**

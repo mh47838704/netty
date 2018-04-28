@@ -51,6 +51,7 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
 
     volatile EventLoopGroup group;
     @SuppressWarnings("deprecation")
+    /** Channel的工厂类 */
     private volatile ChannelFactory<? extends C> channelFactory;
     private volatile SocketAddress localAddress;
     private final Map<ChannelOption<?>, Object> options = new LinkedHashMap<ChannelOption<?>, Object>();
@@ -103,6 +104,7 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
         if (channelClass == null) {
             throw new NullPointerException("channelClass");
         }
+        // 返回生成channel的工厂
         return channelFactory(new ReflectiveChannelFactory<C>(channelClass));
     }
 
@@ -248,6 +250,7 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
 
     /**
      * Create a new {@link Channel} and bind it.
+     * 创建一个channel并绑定到相应的端口
      */
     public ChannelFuture bind(int inetPort) {
         return bind(new InetSocketAddress(inetPort));
@@ -278,6 +281,11 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
         return doBind(localAddress);
     }
 
+    /**
+     * 完成Socketchannel的初始
+     * @param localAddress
+     * @return
+     */
     private ChannelFuture doBind(final SocketAddress localAddress) {
         final ChannelFuture regFuture = initAndRegister();
         final Channel channel = regFuture.channel();
@@ -318,6 +326,12 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
         Channel channel = null;
         try {
             channel = channelFactory.newChannel();
+            /*
+             * 初始化主channel配置信息，默认子类实现，目前包含两种子类：
+             * Bootstrap：用于客户端连接启动，channel是普通SocketChannel类型
+             * ServerBootstrap：用于服务器端连接启动，channel是ServerSocket类型
+             * 这两种子类对channel的初始化方式不同，详情参考相应的初始化方法
+             */
             init(channel);
         } catch (Throwable t) {
             if (channel != null) {
@@ -330,6 +344,11 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
             return new DefaultChannelPromise(new FailedChannel(), GlobalEventExecutor.INSTANCE).setFailure(t);
         }
 
+        /*
+         * 注册该channel到默认的group中
+         * 如果channel是ServerSocket类型，那么是多线程accept
+         * 如果channel是普通SocketChannel类型，建议group设置为单线程
+         */
         ChannelFuture regFuture = config().group().register(channel);
         if (regFuture.cause() != null) {
             if (channel.isRegistered()) {
@@ -373,6 +392,7 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
 
     /**
      * the {@link ChannelHandler} to use for serving the requests.
+     * 注册用于处理request的处理器，可以参考LoggingHandler
      */
     public B handler(ChannelHandler handler) {
         if (handler == null) {
