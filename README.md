@@ -9,7 +9,7 @@ Netty is an asynchronous event-driven network application framework for rapid de
 * [Documentation](http://netty.io/wiki/)
 * [@netty_project](https://twitter.com/netty_project)
 
-## How to build
+## How to build desc
 
 For the detailed information about building and developing Netty, please visit [the developer guide](http://netty.io/wiki/developer-guide.html).  This page only gives very basic information.
 
